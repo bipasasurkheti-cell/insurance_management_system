@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Login | InsureCare{% endblock %}
+{% block content %}
+<style>
+  .auth-shell {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px 20px;
+  }
+
+  .auth-card {
+    width: min(100%, 700px);
+    background: rgba(17, 29, 48, 0.96);
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 10px;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.3);
+    padding: 34px 36px 26px;
+    color: #edf4fb;
+  }
+
+  .auth-card h1 {
+    margin: 0 0 26px;
+    font-size: clamp(1.9rem, 2.5vw, 3rem);
+    text-transform: uppercase;
+    text-align: center;
+    color: #f2f6fb;
+    font-weight: 800;
+    letter-spacing: 0;
+  }
+
+  .auth-form {
+    display: grid;
+    gap: 12px;
+  }
+
+  .auth-form label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #c4d1df;
+  }
+
+  .auth-form input {
+    margin: 0;
+    background: #0d192a;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 7px;
+    padding: 15px 14px;
+    color: #edf4fb;
+    font-size: 1rem;
+  }
+
+  .auth-form button {
+    margin-top: 10px;
+    width: 100%;
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .switch-link {
+    margin-top: 18px;
+    text-align: center;
+    color: #9eafc4;
+    font-size: 0.96rem;
+  }
+
+  .switch-link a {
+    color: #76d7e4;
+    font-weight: 700;
+  }
+</style>
+
+<section class="auth-shell">
+  <div class="auth-card">
+    <h1>Login to your account</h1>
+    <form method="post" class="auth-form">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+      <button class="button" type="submit">Login</button>
+    </form>
+
+    <p class="switch-link">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+  </div>
+</section>
+{% endblock %}

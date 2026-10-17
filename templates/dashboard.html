@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | InsureCare{% endblock %}
+{% block body_class %}customer-app{% endblock %}
+{% block main_class %}customer-main{% endblock %}
+{% block navigation %}
+<header class="admin-topbar">
+  <a class="admin-topbar-brand" href="{{ url_for('dashboard') }}">INSURANCE MANAGEMENT</a>
+  <span class="admin-menu-icon" aria-hidden="true">&#9776;</span>
+  <a class="admin-logout" href="{{ url_for('logout') }}">Logout</a>
+</header>
+{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+  <aside class="sidebar">
+    <a class="brand-mini" href="/">InsureCare</a>
+    <div class="admin-profile">
+      <span class="admin-avatar" aria-hidden="true">{{ current_user.full_name[:1]|upper }}</span>
+      <span><strong>{{ current_user.username }}</strong><small>(Customer)</small></span>
+    </div>
+    <div class="nav-panel">
+      <a href="#overview" class="active">Dashboard</a>
+      <a href="#available-policies">Apply Policy</a>
+      <a href="#history">History</a>
+      <a href="#ask-question">Ask Question</a>
+      <a href="#question-history">Question History</a>
+    </div>
+  </aside>
+
+  <section class="content-panel">
+    <div id="overview" class="customer-heading">
+      <div><span class="eyebrow">CUSTOMER PORTAL</span><h1>Customer Dashboard</h1></div>
+      <p>{{ current_user.customer_id }}</p>
+    </div>
+
+    <div id="available-policies" class="customer-section">
+      <h2>Available Policies</h2>
+      <div class="table-wrap">
+        <table class="available-policy-table">
+          <thead><tr><th>No.</th><th>Policy Name</th><th>Category</th><th>Benefits</th><th>Premium</th><th>Tenure</th><th>Apply</th></tr></thead>
+          <tbody>
+            {% for policy in available_policies %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td><strong>{{ policy.name }}</strong><small class="table-subtext">{{ policy.policy_code }}</small></td>
+              <td>{{ policy.category }}</td>
+              <td>{{ policy.description }}</td>
+              <td>Rs. {{ "%.2f"|format(policy.premium_amount) }}</td>
+              <td>{{ policy.duration_months }} months</td>
+              <td>
+                {% if policy.id in applied_policy_ids %}
+                  <span class="pill">Applied</span>
+                {% else %}
+                  <form method="post" action="{{ url_for('buy_policy', policy_id=policy.id) }}">
+                    <button class="button apply-button" type="submit">Apply</button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7">No policies are currently available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="policies" class="customer-section">
+      <h2>My policies</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Policy</th><th>Code</th><th>Premium</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for item in my_policies %}
+            <tr>
+              <td>{{ item.policy.name }}</td><td>{{ item.policy.policy_code }}</td>
+              <td>Rs. {{ "%.2f"|format(item.policy.premium_amount) }}</td><td>{{ item.status }}</td>
+              <td>
+                {% if item.status == 'pending_payment' %}
+                  <a class="button small" href="{{ url_for('pay', enrollment_id=item.id) }}">Pay now</a>
+                {% elif item.status in ['approved', 'active'] %}
+                  <a class="button small" href="{{ url_for('submit_claim', enrollment_id=item.id) }}">Submit claim</a>
+                {% else %}Waiting for review{% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5">You have not applied for any policies.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="history" class="customer-section">
+      <h2>History</h2>
+      <h3>Payments</h3>
+      <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Policy</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody>
+      {% for p in payments %}<tr><td>{{ p.reference }}</td><td>{{ p.customer_policy.policy.name }}</td><td>Rs. {{ "%.2f"|format(p.amount) }}</td><td>{{ p.method }}</td><td>{{ p.status }}</td></tr>
+      {% else %}<tr><td colspan="5">No payments yet.</td></tr>{% endfor %}
+      </tbody></table></div>
+      <h3>Claims</h3>
+      <div class="table-wrap"><table><thead><tr><th>Claim reference</th><th>Policy</th><th>Amount</th><th>Status</th></tr></thead><tbody>
+      {% for c in claims %}<tr><td>{{ c.claim_reference }}</td><td>{{ c.customer_policy.policy.name }}</td><td>Rs. {{ "%.2f"|format(c.claim_amount) }}</td><td>{{ c.status }}</td></tr>
+      {% else %}<tr><td colspan="4">No claims submitted.</td></tr>{% endfor %}
+      </tbody></table></div>
+    </div>
+
+    <div id="ask-question" class="customer-section">
+      <h2>Ask Question</h2>
+      <form method="post" action="{{ url_for('ask_question') }}" class="auth-form">
+        <textarea name="question" rows="4" placeholder="Enter your question for the admin" required></textarea>
+        <button class="button" type="submit">Send Question</button>
+      </form>
+    </div>
+
+    <div id="question-history" class="customer-section">
+      <h2>Question History</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Question</th><th>Status</th><th>Answer</th></tr></thead>
+          <tbody>
+            {% for q in questions %}
+            <tr>
+              <td>{{ q.question }}</td>
+              <td>{{ q.status }}</td>
+              <td>{{ q.answer or 'Waiting for admin response' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3">No questions submitted yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

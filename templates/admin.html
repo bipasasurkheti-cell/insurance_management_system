@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block title %}Admin | InsureCare{% endblock %}
+{% block body_class %}admin-app{% endblock %}
+{% block main_class %}admin-main{% endblock %}
+{% block navigation %}
+<header class="admin-topbar">
+    <a class="admin-topbar-brand" href="{{ url_for('admin') }}">INSURANCE MANAGEMENT</a>
+    <span class="admin-menu-icon" aria-hidden="true">&#9776;</span>
+    <a class="admin-logout" href="{{ url_for('logout') }}">Logout</a>
+</header>
+{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+    <aside class="sidebar">
+        <a class="brand-mini" href="/">InsureCare</a>
+        <div class="admin-profile">
+            <span class="admin-avatar">A</span>
+            <span><strong>Admin</strong><small>Administrator</small></span>
+        </div>
+        <div class="nav-panel">
+            <a href="#overview" class="active">Dashboard</a>
+            <a href="#customers">Customers</a>
+            <a href="#policies">Category</a>
+            <a href="#policies">Policy</a>
+            <a href="#applications">Applications</a>
+            <a href="#questions">Questions</a>
+            <a href="#payments">Payments</a>
+            <a href="#claims">Claims</a>
+        </div>
+    </aside>
+
+    <section class="content-panel">
+        <div id="overview" class="admin-heading">
+            <div><span class="eyebrow">INSURANCE MANAGEMENT</span><h1>Admin dashboard</h1></div>
+            <p class="collection-total">Premiums collected <strong>Rs. {{ "%.2f"|format(stats.collected_premiums) }}</strong></p>
+        </div>
+
+        <div class="admin-actions" aria-label="Quick actions">
+            <a class="admin-action" href="{{ url_for('policies') }}"><span class="action-icon" aria-hidden="true">&#9638;</span><strong>View policy</strong><small>Browse available coverage</small></a>
+            <a class="admin-action" href="#new-policy"><span class="action-icon" aria-hidden="true">&#43;</span><strong>Add policy</strong><small>Create a policy product</small></a>
+            <a class="admin-action" href="#policies"><span class="action-icon" aria-hidden="true">&#9998;</span><strong>Update policy</strong><small>Edit policy details</small></a>
+            <a class="admin-action" href="#policies"><span class="action-icon" aria-hidden="true">&#8722;</span><strong>Delete policy</strong><small>Remove a policy product</small></a>
+        </div>
+
+        <div class="stats-grid admin-metrics">
+            <div class="stat-card">
+                <small>Total policy holders</small>
+                <strong>{{ stats.policy_holders }}</strong>
+            </div>
+            <div class="stat-card">
+                <small>Approved policy holders</small>
+                <strong>{{ stats.approved_policy_holders }}</strong>
+            </div>
+            <div class="stat-card">
+                <small>Disapproved policy holders</small>
+                <strong>{{ stats.disapproved_policy_holders }}</strong>
+            </div>
+            <div class="stat-card">
+                <small>Waiting for approval</small>
+                <strong>{{ stats.waiting_policy_holders }}</strong>
+            </div>
+        </div>
+
+        <div id="customers">
+            <h2>Customers</h2>
+            <input class="table-filter" type="search" data-table-filter="customers-table" placeholder="Search customers" aria-label="Search customers">
+            <div class="table-wrap">
+                <table id="customers-table">
+                    <thead>
+                        <tr><th>Customer ID</th><th>Name</th><th>Username</th><th>Email</th><th>Role</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr><td>{{ u.customer_id }}</td><td>{{ u.full_name }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="policies">
+            <h2>Policies</h2>
+            <form id="new-policy" method="post" action="{{ url_for('add_policy') }}" class="auth-form policy-form" style="margin-bottom: 18px;">
+                <div class="row-form" style="display:grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap:12px;">
+                    <input name="name" placeholder="Policy name" required>
+                    <input name="category" placeholder="Category" required>
+                    <input name="policy_code" placeholder="Policy code" required>
+                    <input name="premium_amount" type="number" step="0.01" placeholder="Premium" required>
+                    <input name="duration_months" type="number" placeholder="Duration months" required>
+                    <textarea name="description" rows="3" placeholder="Description" required></textarea>
+                </div>
+                <button class="button" type="submit">Add policy</button>
+            </form>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Code</th><th>Name</th><th>Category</th><th>Premium</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in policies %}
+                        <tr><td>{{ p.policy_code }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td><td>Rs. {{ "%.2f"|format(p.premium_amount) }}</td><td>
+                            <div class="policy-actions">
+                                <details class="policy-edit">
+                                    <summary class="button small">Edit</summary>
+                                    <form method="post" action="{{ url_for('update_policy', policy_id=p.id) }}" class="auth-form">
+                                        <input name="name" value="{{ p.name }}" aria-label="Policy name" required>
+                                        <input name="category" value="{{ p.category }}" aria-label="Policy category" required>
+                                        <input name="policy_code" value="{{ p.policy_code }}" aria-label="Policy code" required>
+                                        <input name="premium_amount" type="number" min="0.01" step="0.01" value="{{ p.premium_amount }}" aria-label="Premium amount" required>
+                                        <input name="duration_months" type="number" min="1" value="{{ p.duration_months }}" aria-label="Duration in months" required>
+                                        <textarea name="description" rows="3" aria-label="Policy description" required>{{ p.description }}</textarea>
+                                        <button class="button small" type="submit">Save changes</button>
+                                    </form>
+                                </details>
+                                <form method="post" action="{{ url_for('delete_policy', policy_id=p.id) }}" onsubmit="return confirm('Delete this policy? Existing policy holders will also be removed.');">
+                                    <button class="button small danger" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="applications">
+            <h2>Policy applications</h2>
+            <input class="table-filter" type="search" data-table-filter="applications-table" placeholder="Search applications" aria-label="Search applications">
+            <div class="table-wrap">
+                <table id="applications-table">
+                    <thead>
+                        <tr><th>Customer</th><th>Policy</th><th>Status</th><th>Approve</th><th>Reject</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                        <tr>
+                            <td>{{ app.user.username }}</td>
+                            <td>{{ app.policy.name }}</td>
+                            <td>{{ app.status }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('approve_policy', application_id=app.id) }}">
+                                    <button class="button small" type="submit">Approve</button>
+                                </form>
+                            </td>
+                            <td>
+                                <form method="post" action="{{ url_for('reject_policy', application_id=app.id) }}">
+                                    <button class="button small" type="submit">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="5">No policy applications yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="questions">
+            <h2>Customer questions</h2>
+            <input class="table-filter" type="search" data-table-filter="questions-table" placeholder="Search questions" aria-label="Search questions">
+            <div class="table-wrap">
+                <table id="questions-table">
+                    <thead>
+                        <tr><th>Customer</th><th>Question</th><th>Answer</th><th>Action</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for q in questions %}
+                        <tr>
+                            <td>{{ q.user.username }}</td>
+                            <td>{{ q.question }}</td>
+                            <td>
+                                {% if q.answer %}
+                                {{ q.answer }}
+                                {% else %}
+                                <form method="post" action="{{ url_for('answer_question', question_id=q.id) }}" class="row-form">
+                                    <input name="answer" placeholder="Write answer" required>
+                                    <button class="button small" type="submit">Answer</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                            <td>{{ q.status }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4">No questions.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="payments">
+            <h2>Payments</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr><th>Reference</th><th>Username</th><th>Customer ID</th><th>Amount</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for p in payments %}
+                        <tr><td>{{ p.reference }}</td><td>{{ p.user.username }}</td><td>{{ p.user.customer_id }}</td><td>Rs. {{ "%.2f"|format(p.amount) }}</td><td>{{ p.status }}</td></tr>
+                        {% else %}<tr><td colspan="5">No payments.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="claims">
+            <h2>Claims</h2>
+            <input class="table-filter" type="search" data-table-filter="claims-table" placeholder="Search claims" aria-label="Search claims">
+            <div class="table-wrap">
+                <table id="claims-table">
+                    <thead>
+                        <tr><th>Reference</th><th>Customer</th><th>Amount</th><th>Current status</th><th>Update</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for c in claims %}
+                        <tr>
+                            <td>{{ c.claim_reference }}</td>
+                            <td>{{ c.user.username }}</td>
+                            <td>Rs. {{ "%.2f"|format(c.claim_amount) }}</td>
+                            <td>{{ c.status }}</td>
+                            <td>
+                                <form method="post" action="{{ url_for('update_claim', claim_id=c.id) }}" class="row-form">
+                                    <select name="status">
+                                        <option value="under_review">Under review</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                    <button class="button small">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}<tr><td colspan="5">No claims.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+<script>
+    document.querySelectorAll("[data-table-filter]").forEach((input) => {
+        const table = document.getElementById(input.dataset.tableFilter);
+        if (!table) return;
+
+        input.addEventListener("input", () => {
+            const query = input.value.trim().toLowerCase();
+            table.querySelectorAll("tbody tr").forEach((row) => {
+                row.hidden = !row.textContent.toLowerCase().includes(query);
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Home | InsureCare{% endblock %}
+{% block content %}
+<section class="hero">
+  <span class="eyebrow">INSURANCE MANAGEMENT</span>
+  <h1>Protection for the things<br>that matter most.</h1>
+  <p>Explore example insurance plans and manage your policies from one place.</p>
+  <a class="button" href="{{ url_for('policies') }}">Explore policies</a>
+  <a class="button secondary" href="{{ url_for('register') }}">Create account</a>
+</section>
+<h2>Available plans</h2>
+<div class="grid">
+{% for p in policies %}
+  <article class="card">
+    <span class="pill">{{ p.category }}</span><h3>{{ p.name }}</h3>
+    <p>{{ p.description }}</p>
+    <p class="price">Rs. {{ "%.2f"|format(p.premium_amount) }} <small>/ {{ p.duration_months }} months</small></p>
+    <a href="{{ url_for('policies') }}">View details →</a>
+  </article>
+{% else %}<p>No policies available.</p>{% endfor %}
+</div>
+<p class="disclaimer">Demo plans only. This application is not an insurer and does not provide actual insurance coverage.</p>
+{% endblock %}

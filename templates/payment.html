@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Demo payment | InsureCare{% endblock %}
+{% block content %}
+<section class="form-card">
+  <span class="eyebrow">TEST MODE ONLY</span><h1>Demo payment</h1>
+  <p>Policy: <b>{{ enrollment.policy.name }}</b></p>
+  <p>Amount: <span class="price">Rs. {{ "%.2f"|format(enrollment.policy.premium_amount) }}</span></p>
+  <div class="alert error">This button simulates a payment. It does not charge real money or activate actual insurance coverage.</div>
+  <form method="post"><button class="button full" type="submit">Simulate successful test payment</button></form>
+  <p><a href="{{ url_for('dashboard') }}">Cancel and return to dashboard</a></p>
+</section>
+{% endblock %}

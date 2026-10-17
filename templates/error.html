@@ -1,0 +1,15 @@
+
+{% extends "base.html" %}
+
+{% block title %}Error | InsureCare{% endblock %}
+
+{% block content %}
+<section class="form-card">
+    <h1>Error {{ code }}</h1>
+
+    <p>{{ message }}</p>
+
+    <a href="/" class="button">Go to Home</a>
+    <a href="/login" class="button">Customer Login</a>
+</section>
+{% endblock %}

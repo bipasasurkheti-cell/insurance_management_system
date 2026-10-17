@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Registration</title>
+</head>
+<body>
+    <h1>Customer Registration</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+        <p>Full Name</p>
+        <input type="text" name="full_name" required>
+
+        <p>Username</p>
+        <input type="text" name="username" minlength="3" required>
+
+        <p>Email</p>
+        <input type="email" name="email" required>
+
+        <p>Phone Number</p>
+        <input type="tel" name="phone" required>
+
+        <p>Password (minimum 12 characters)</p>
+        <input type="password" name="password" minlength="12" required>
+
+        <br><br>
+        <button type="submit">Register</button>
+    </form>
+
+    <p>Already registered? <a href="/login">Login here</a></p>
+    <a href="/">Back to Home</a>
+</body>
+</html>

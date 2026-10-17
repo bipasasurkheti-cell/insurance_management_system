@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Customer Dashboard</title>
+</head>
+<body>
+    <h1>Welcome, {{ current_user.full_name }}!</h1>
+
+    <h2>Your Insurance Account</h2>
+
+    <p>Customer ID: <strong>{{ current_user.customer_id }}</strong></p>
+    <p>Username: {{ current_user.username }}</p>
+    <p>Email: {{ current_user.email }}</p>
+    <p>Phone: {{ current_user.phone }}</p>
+
+    <hr>
+
+    <p>Your customer account is active.</p>
+
+    <a href="/logout">Logout</a>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Policies | InsureCare{% endblock %}
+{% block content %}
+<h1>Insurance policies</h1><p class="muted">These are sample plans for software testing, not real insurance offers.</p>
+<div class="grid">
+{% for p in policies %}
+  <article class="card">
+    <span class="pill">{{ p.category }}</span><h2>{{ p.name }}</h2><p>{{ p.description }}</p>
+    <p><b>Policy code:</b> {{ p.policy_code }}</p>
+    <p><b>Premium:</b> Rs. {{ "%.2f"|format(p.premium_amount) }}</p>
+    <p><b>Duration:</b> {{ p.duration_months }} months</p>
+    {% if current_user.is_authenticated %}
+      <form method="post" action="{{ url_for('buy_policy', policy_id=p.id) }}"><button class="button full">Select plan</button></form>
+    {% else %}<a class="button full" href="{{ url_for('login') }}">Log in to select</a>{% endif %}
+  </article>
+{% endfor %}
+</div>
+{% endblock %}

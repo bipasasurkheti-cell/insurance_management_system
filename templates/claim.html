@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Submit claim | InsureCare{% endblock %}
+{% block content %}
+<section class="form-card">
+  <h1>Submit a claim</h1><p>Policy: {{ enrollment.policy.name }}</p>
+  <form method="post">
+    <label for="claim_amount">Claim amount (Rs.)</label><input id="claim_amount" name="claim_amount" type="number" min="0.01" step="0.01" required>
+    <label for="description">Describe the claim</label><textarea id="description" name="description" rows="5" maxlength="5000" required></textarea>
+    <button class="button full" type="submit">Submit claim</button>
+  </form>
+</section>
+{% endblock %}
